@@ -3,81 +3,86 @@ import 'package:todolist/counter_bloc.dart';
 import 'package:todolist/counter_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MaterialApp(
+      home: App(),
+    )
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  var todos = [];
+  String input = "";
+
+  @override
+  void initState() {
+    super.initState();
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final _bloc = CounterBloc();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text("Todo List"),
       ),
-      body: Center(
-        child: StreamBuilder(
-          stream: _bloc.counter,
-          initialData: 0,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text("You've pushed so many times"), 
-                Text('${snapshot.data}', style: Theme.of(context).textTheme.headline1,),
-              ],
-            );
-          },
-        )
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("add todo"),
+                content: TextField(
+                  onChanged: (String value) {
+                    input = value;
+                  },
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        todos.add(input);
+                      });
+                    },
+                    child: Text("add"),
+                  )
+                ],
+              );
+            }
+          );
+        },
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+      body: Column(
         children: [
-          FloatingActionButton(
-            onPressed: () => _bloc.counterEventSink.add(IncrementEvent()),
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
-          ),
-          SizedBox(width: 20,),
-          FloatingActionButton(
-            onPressed: () => _bloc.counterEventSink.add(DecrementEvent()),
-            tooltip: 'Decrement',
-            child: const Icon(Icons.remove),
+          Expanded(
+            child: ListView.builder(
+              itemCount: todos.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Dismissible(
+                    key: Key(todos[index]),
+                    child: Card(
+                     child: ListTile(
+                       title: Text(todos[index]),
+                     ),
+                ));
+              },
+            ),
           ),
         ],
       ),
     );
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _bloc.dispose();
-  }
 }
+
