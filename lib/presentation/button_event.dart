@@ -1,3 +1,3 @@
 abstract class ButtonEvent {}
 
-class AddTodo extends ButtonEvent {}
+class AddTodoEvent extends ButtonEvent {}

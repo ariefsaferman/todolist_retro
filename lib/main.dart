@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todolist/counter_bloc.dart';
 import 'package:todolist/counter_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todolist/presentation/button_bloc.dart';
 
 void main() {
   runApp(
@@ -21,6 +22,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   var todos = [];
   String input = "";
+  // final _bloc = ButtonBloc();
 
   @override
   void initState() {
@@ -39,6 +41,9 @@ class _AppState extends State<App> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)
+                ),
                 title: const Text("add todo"),
                 content: TextField(
                   onChanged: (String value) {
@@ -50,6 +55,7 @@ class _AppState extends State<App> {
                     onPressed: () {
                       setState(() {
                         todos.add(input);
+                        Navigator.pop(context);
                       });
                     },
                     child: Text("add"),
@@ -73,10 +79,24 @@ class _AppState extends State<App> {
                 return Dismissible(
                     key: Key(todos[index]),
                     child: Card(
-                     child: ListTile(
-                       title: Text(todos[index]),
-                     ),
-                ));
+                      elevation: 8,
+                      margin: EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)
+                      ),
+                      child: ListTile(
+                        title: Text(todos[index]),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Colors.red,
+                          onPressed: () {
+                            setState(() {
+                              todos.removeAt(index);
+                            });
+                          },
+                        ),
+                      ),
+                    ));
               },
             ),
           ),
